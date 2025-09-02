@@ -6,4 +6,4 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Env
-.env
+# env
