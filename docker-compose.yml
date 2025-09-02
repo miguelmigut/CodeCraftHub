@@ -1,0 +1,12 @@
+services:
+  user-svc:
+    build: .
+    env_file: .env
+    ports: ["3000:3000"]
+    depends_on: [mongo]
+  mongo:
+    image: mongo:7
+    ports: ["27017:27017"]
+    volumes: ["mongo:/data/db"]
+volumes:
+  mongo:
