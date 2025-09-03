@@ -7,7 +7,11 @@ export const validateRegister = celebrate({
     tenantId: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(8).required(),
-  }),
+    profile: Joi.object({
+      // Permite letras, espacios, tildes, apóstrofes y guiones (2–80 chars)
+      name: Joi.string().pattern(/^[\p{L} .'-]{2,80}$/u).required()
+    }).required()
+  }).unknown(false)
 });
 
 export const validateLogin = celebrate({

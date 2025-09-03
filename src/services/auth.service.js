@@ -13,23 +13,42 @@ function signRefresh(payload) {
   return jwt.sign(payload, env.JWT_PRIVATE_KEY, { algorithm: 'RS256', expiresIn: env.JWT_REFRESH_TTL });
 }
 
-export async function register({ tenantId, email, password }) {
+export async function register({ tenantId, email, password, profile }) {
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-  const doc = await User.create({ tenantId, email, passwordHash, roles: ['student'] });
-  return { id: doc._id.toString(), email: doc.email };
+
+  const doc = await User.create({
+    tenantId,
+    email: email.toLowerCase(),
+    passwordHash,
+    roles: ['student'],
+    ...(profile?.name ? { profile: { name: profile.name } } : {}),
+  });
+
+  return {
+    id: doc._id.toString(),
+    email: doc.email,
+    profile: doc.profile ?? {}
+  };
 }
 
 export async function login({ tenantId, email, password }) {
-  const user = await User.findOne({ tenantId, email }).select('+passwordHash');
+  const user = await User.findOne({ tenantId, email: email.toLowerCase() }).select('+passwordHash');
   if (!user) throw new Error('INVALID_CREDENTIALS');
   const ok = await bcrypt.compare(password, user.passwordHash);
   if (!ok) throw new Error('INVALID_CREDENTIALS');
 
   const sid = crypto.randomUUID();
-  const accessToken = signAccess({ sub: user.id, tenantId, roles: user.roles, sid });
-  const refreshToken = signRefresh({ sub: user.id, tenantId, sid });
+  const accessToken = jwt.sign(
+    { sub: user.id, tenantId, roles: user.roles, sid },
+    env.JWT_PRIVATE_KEY,
+    { algorithm: 'RS256', expiresIn: env.JWT_ACCESS_TTL }
+  );
+  const refreshToken = jwt.sign(
+    { sub: user.id, tenantId, sid },
+    env.JWT_PRIVATE_KEY,
+    { algorithm: 'RS256', expiresIn: env.JWT_REFRESH_TTL }
+  );
 
-  // Guarda hash del refresh (rotación segura)
   const refreshHash = await bcrypt.hash(refreshToken, SALT_ROUNDS);
   user.refreshSessions.push({ sid, refreshHash });
   await user.save();

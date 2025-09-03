@@ -6,8 +6,8 @@ export const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   PORT: process.env.PORT || 3000,
 
-  MONGO_URI: process.env.MONGO_URI || 'mongodb://localhost:27017/usersvc',
-  MONGO_DB: process.env.MONGO_DB || 'usersvc',
+  MONGO_URI: process.env.MONGO_URI || 'mongodb://localhost:27017/usermngtservice',
+  MONGO_DB: process.env.MONGO_DB || 'usermngtservice',
 
   JWT_ACCESS_TTL: process.env.JWT_ACCESS_TTL || '10m',
   JWT_REFRESH_TTL: process.env.JWT_REFRESH_TTL || '7d',
