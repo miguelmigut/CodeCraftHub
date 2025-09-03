@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
 
   mongodb:
-    image: mongo:3.6
+    image: mongo:4.4
     container_name: usersvc-mongo
     command: ["mongod", "--bind_ip_all"]
     environment:
