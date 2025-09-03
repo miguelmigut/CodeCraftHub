@@ -6,11 +6,13 @@ import { env } from '../config/env.js';
 
 const SALT_ROUNDS = 12;
 
+const PRIVATE_KEY = (env.JWT_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+
 function signAccess(payload) {
-  return jwt.sign(payload, env.JWT_PRIVATE_KEY, { algorithm: 'RS256', expiresIn: env.JWT_ACCESS_TTL });
+  return jwt.sign(payload, PRIVATE_KEY, { algorithm: 'RS256', expiresIn: env.JWT_ACCESS_TTL });
 }
 function signRefresh(payload) {
-  return jwt.sign(payload, env.JWT_PRIVATE_KEY, { algorithm: 'RS256', expiresIn: env.JWT_REFRESH_TTL });
+  return jwt.sign(payload, PRIVATE_KEY, { algorithm: 'RS256', expiresIn: env.JWT_REFRESH_TTL });
 }
 
 export async function register({ tenantId, email, password, profile }) {
