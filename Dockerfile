@@ -1,5 +1,5 @@
-# Usa exactamente Node 20.19.0
-FROM node:20.19.0-alpine
+# Alpine en 20.x (no exacto en patch)
+FROM node:20-alpine
 
 # Crear directorio de trabajo
 WORKDIR /app
